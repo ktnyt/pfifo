@@ -16,7 +16,7 @@ DESCRIPTION = 'POSIX fifo wrapper for Python'
 URL = 'https://github.com/ktnyt/pfifo'
 EMAIL = 'kotone@sfc.keio.ac.jp'
 AUTHOR = 'Kotone Itaya'
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 
 SETUP_REQUIRED = ['pybind11>=2.2']
 
@@ -89,6 +89,12 @@ class get_pybind_include(object):
         return pybind11.get_include(self.user)
 
 
+def posix_flag():
+    if sys.platform =='darwin':
+        return []
+    return ['rt']
+
+
 ext_modules = [
     Extension(
         '_pfifo',
@@ -100,6 +106,7 @@ ext_modules = [
             # Path to pfifo headers
             "./include",
         ],
+        libraries=posix_flag(),
         language='c++'),
 ]
 
