@@ -39,6 +39,7 @@ class reader {
     close(fd);
     unlink(name.c_str());
   }
+
   std::string read() {
     std::size_t n, len;
     n = ::read(fd, reinterpret_cast<char*>(&len), sizeof(std::size_t));
@@ -66,7 +67,7 @@ class reader {
       throw std::system_error(EMSGSIZE, std::system_category());
     }
 
-    std::string ret(buf);
+    std::string ret(buf, buf + len);
     delete[] buf;
 
     return ret;
