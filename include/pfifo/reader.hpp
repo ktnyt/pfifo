@@ -53,6 +53,10 @@ class reader {
       throw std::system_error(EMSGSIZE, std::system_category());
     }
 
+    if (len == 0) {
+      return "";
+    }
+
     char* buf = new char[len];
     n = ::read(fd, buf, len);
 
