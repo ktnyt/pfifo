@@ -3,6 +3,7 @@
 
 #include <string>
 #include <system_error>
+#include <vector>
 
 #include <sys/errno.h>
 #include <sys/fcntl.h>
@@ -40,7 +41,7 @@ class reader {
     unlink(name.c_str());
   }
 
-  std::string read() {
+  std::vector<char> readv() {
     std::size_t n, len;
     n = ::read(fd, reinterpret_cast<char*>(&len), sizeof(std::size_t));
 
@@ -54,27 +55,27 @@ class reader {
     }
 
     if (len == 0) {
-      return "";
+      return std::vector<char>();
     }
 
-    char* buf = new char[len];
-    n = ::read(fd, buf, len);
+    std::vector<char> ret(len);
+    n = ::read(fd, ret.data(), len);
 
     if (n < 0) {
       int err = errno;
-      delete[] buf;
       throw std::system_error(err, std::system_category());
     }
 
     if (n != len) {
-      delete[] buf;
       throw std::system_error(EMSGSIZE, std::system_category());
     }
 
-    std::string ret(buf, buf + len);
-    delete[] buf;
-
     return ret;
+  }
+
+  std::string read() {
+    std::vector<char> v = readv();
+    return std::string(v.begin(), v.end());
   }
 
  private:
