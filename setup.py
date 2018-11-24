@@ -16,7 +16,7 @@ DESCRIPTION = 'POSIX fifo wrapper for Python'
 URL = 'https://github.com/ktnyt/pfifo'
 EMAIL = 'kotone@sfc.keio.ac.jp'
 AUTHOR = 'Kotone Itaya'
-VERSION = '1.0.5'
+VERSION = '1.0.6'
 
 SETUP_REQUIRED = ['pybind11>=2.2']
 
