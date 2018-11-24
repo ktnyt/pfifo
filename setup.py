@@ -18,8 +18,6 @@ EMAIL = 'kotone@sfc.keio.ac.jp'
 AUTHOR = 'Kotone Itaya'
 VERSION = '1.0.6'
 
-SETUP_REQUIRED = ['pybind11>=2.2']
-
 here = os.path.abspath(os.path.dirname(__file__))
 
 headers = [
@@ -189,7 +187,7 @@ setup(
     author=AUTHOR,
     author_email=EMAIL,
     url=URL,
-    setup_requires=SETUP_REQUIRED,
+    install_requires=['pybind11>=2.2'],
     packages=setuptools.find_packages(),
     ext_modules=ext_modules,
     license='Apache',
