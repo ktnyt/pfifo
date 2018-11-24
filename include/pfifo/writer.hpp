@@ -40,12 +40,15 @@ class writer {
     unlink(name.c_str());
   }
 
-  void write(std::string msg) const {
-    std::size_t len = sizeof(char) * msg.length();
+  void write(std::string msg) const { write(msg.begin(), msg.end()); }
+
+  template <class InputIt>
+  void write(InputIt first, InputIt last) const {
+    std::size_t len = sizeof(char) * (last - first);
     char* buf = new char[sizeof(std::size_t) + len];
 
     *reinterpret_cast<std::size_t*>(buf) = len;
-    std::copy(msg.begin(), msg.end(), buf + sizeof(std::size_t));
+    std::copy(first, last, buf + sizeof(std::size_t));
 
     std::size_t n = ::write(fd, buf, sizeof(std::size_t) + len);
     delete[] buf;

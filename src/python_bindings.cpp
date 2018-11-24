@@ -38,7 +38,7 @@ class writer final {
 
   ~writer() { delete ptr; }
 
-  void write(std::string msg) { ptr->write(msg); }
+  void write(std::string msg) { ptr->write(msg.begin(), msg.end()); }
 
  private:
   pfifo::writer* ptr;
