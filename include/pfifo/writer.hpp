@@ -10,6 +10,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <iostream>
+
 namespace pfifo {
 
 class writer {
@@ -22,14 +24,14 @@ class writer {
       }
     }
 
-    if ((fd = open(name.c_str(), O_RDWR)) == -1) {
+    if ((fd = open(name.c_str(), O_WRONLY)) == -1) {
       int err = errno;
       throw std::system_error(err, std::system_category());
     }
   }
 
   writer(std::string name) : name(name) {
-    if ((fd = open(name.c_str(), O_RDWR)) == -1) {
+    if ((fd = open(name.c_str(), O_WRONLY)) == -1) {
       int err = errno;
       throw std::system_error(err, std::system_category());
     }
@@ -40,27 +42,40 @@ class writer {
     unlink(name.c_str());
   }
 
-  void write(std::string msg) const { write(msg.begin(), msg.end()); }
-
-  template <class InputIt>
-  void write(InputIt first, InputIt last) const {
-    std::size_t len = sizeof(char) * (last - first);
-    char* buf = new char[sizeof(std::size_t) + len];
-
-    *reinterpret_cast<std::size_t*>(buf) = len;
-    std::copy(first, last, buf + sizeof(std::size_t));
-
-    std::size_t n = ::write(fd, buf, sizeof(std::size_t) + len);
-    delete[] buf;
+  inline void write_size(std::size_t size) const {
+    char* buf = reinterpret_cast<char*>(&size);
+    std::size_t n = ::write(fd, buf, sizeof(std::size_t));
 
     if (n < 0) {
       int err = errno;
       throw std::system_error(err, std::system_category());
     }
 
-    if (n != sizeof(std::size_t) + len) {
+    if (n != sizeof(std::size_t)) {
       throw std::system_error(EMSGSIZE, std::system_category());
     }
+  }
+
+  template <class Sequence>
+  void write(Sequence msg) const {
+    flock(fd, LOCK_EX);
+
+    std::size_t size = sizeof(typename Sequence::value_type) * msg.size();
+    const char* buf = reinterpret_cast<const char*>(msg.data());
+
+    write_size(size);
+
+    std::size_t written = 0;
+
+    while (written < size) {
+      written += ::write(fd, buf + written, size - written);
+    }
+
+    if (written != size) {
+      throw std::system_error(EMSGSIZE, std::system_category());
+    }
+
+    flock(fd, LOCK_UN);
   }
 
  private:

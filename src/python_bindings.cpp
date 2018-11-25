@@ -20,7 +20,7 @@ class reader final {
 
   ~reader() { delete ptr; }
 
-  py::bytes read() { return py::bytes(ptr->read()); }
+  py::bytes read() { return py::bytes(ptr->reads()); }
 
  private:
   pfifo::reader* ptr;
@@ -38,7 +38,7 @@ class writer final {
 
   ~writer() { delete ptr; }
 
-  void write(std::string msg) { ptr->write(msg.begin(), msg.end()); }
+  void write(std::string msg) { ptr->write(msg); }
 
  private:
   pfifo::writer* ptr;
