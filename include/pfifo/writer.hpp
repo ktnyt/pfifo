@@ -10,8 +10,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <iostream>
-
 namespace pfifo {
 
 class writer {
