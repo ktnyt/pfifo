@@ -81,6 +81,11 @@ class writer {
   int fd;
 };
 
+template <>
+void writer::write(const char* msg) const {
+  write(std::string(msg));
+}
+
 }  // namespace pfifo
 
 #endif  // __PFIFO_WRITER_HPP__

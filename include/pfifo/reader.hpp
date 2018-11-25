@@ -41,7 +41,7 @@ class reader {
     unlink(name.c_str());
   }
 
-  std::size_t read_size() {
+  inline std::size_t read_size() {
     std::size_t size;
     char* buf = reinterpret_cast<char*>(&size);
     std::size_t n = ::read(fd, buf, sizeof(std::size_t));
@@ -61,6 +61,10 @@ class reader {
   template <class Sequence>
   Sequence read() {
     std::size_t size = read_size();
+    if (size == 0) {
+      return Sequence();
+    }
+
     Sequence ret(size / sizeof(typename Sequence::value_type));
     char* buf = reinterpret_cast<char*>(ret.data());
 
