@@ -20,7 +20,7 @@ class reader final {
 
   ~reader() { delete ptr; }
 
-  py::bytes read() { return py::bytes(ptr->reads()); }
+  py::bytes read() { return py::bytes(ptr->read<char*>()); }
 
  private:
   pfifo::reader* ptr;

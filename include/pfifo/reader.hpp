@@ -87,6 +87,23 @@ class reader {
   int fd;
 };
 
+template <>
+char* reader::read() {
+  std::size_t size = read_size();
+  if (size == 0) {
+    return nullptr;
+  }
+
+  char* buf = new char[size];
+
+  std::size_t readout = 0;
+  while (readout < size) {
+    readout += ::read(fd, buf + readout, size - readout);
+  }
+
+  return buf;
+}
+
 }  // namespace pfifo
 
 #endif  // __PFIFO_READER_HPP__
