@@ -20,7 +20,13 @@ class reader final {
 
   ~reader() { delete ptr; }
 
-  py::bytes read() { return py::bytes(ptr->reads()); }
+  int read_size() { return ptr->read_size(); }
+  void read_into(py::buffer b, int size) {
+    py::buffer_info info = b.request();
+    ptr->read_into(reinterpret_cast<char*>(info.ptr), size);
+  }
+
+  py::bytes reads() { return py::bytes(ptr->reads()); }
 
  private:
   pfifo::reader* ptr;
@@ -47,7 +53,9 @@ class writer final {
 PYBIND11_MODULE(_pfifo, m) {
   py::class_<reader>(m, "Reader")
       .def(py::init<std::string, py::object>())
-      .def("read", &reader::read);
+      .def("reads", &reader::reads)
+      .def("read_size", &reader::read_size)
+      .def("read_into", &reader::read_into);
 
   py::class_<writer>(m, "Writer")
       .def(py::init<std::string, py::object>())

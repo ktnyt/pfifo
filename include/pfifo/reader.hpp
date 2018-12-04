@@ -59,6 +59,13 @@ class reader {
     return size;
   }
 
+  void read_into(char* buf, std::size_t size) {
+    std::size_t readout = 0;
+    while (readout < size) {
+      readout += ::read(fd, buf + readout, size - readout);
+    }
+  }
+
   template <class Sequence>
   Sequence read() {
     std::size_t size = read_size();
@@ -69,10 +76,7 @@ class reader {
     Sequence ret(size / sizeof(typename Sequence::value_type));
     char* buf = reinterpret_cast<char*>(ret.data());
 
-    std::size_t readout = 0;
-    while (readout < size) {
-      readout += ::read(fd, buf + readout, size - readout);
-    }
+    read_into(buf, size);
 
     return ret;
   }
