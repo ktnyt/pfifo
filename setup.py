@@ -17,7 +17,7 @@ DESCRIPTION = 'POSIX fifo wrapper for Python'
 URL = 'https://github.com/ktnyt/pfifo'
 EMAIL = 'kotone@sfc.keio.ac.jp'
 AUTHOR = 'Kotone Itaya'
-VERSION = '1.1.6'
+VERSION = '1.1.7'
 
 here = os.path.abspath(os.path.dirname(__file__))
 
