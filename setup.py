@@ -10,13 +10,14 @@ import setuptools
 from setuptools import find_packages, setup, Command, Extension
 from setuptools.command.build_ext import build_ext
 from distutils.command.install_headers import install_headers
+from distutils.command.build_py import build_py
 
 NAME = 'pfifo'
 DESCRIPTION = 'POSIX fifo wrapper for Python'
 URL = 'https://github.com/ktnyt/pfifo'
 EMAIL = 'kotone@sfc.keio.ac.jp'
 AUTHOR = 'Kotone Itaya'
-VERSION = '1.1.6'
+VERSION = '1.1.7'
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -178,6 +179,23 @@ class InstallHeaders(install_headers):
             self.outfiles.append(out)
 
 
+# Install the headers inside the package as well
+class BuildPy(build_py):
+    def build_package_data(self):
+        build_py.build_package_data(self)
+        for header in headers:
+            target = os.path.join(self.build_lib, 'pfifo', header)
+            self.mkpath(os.path.dirname(target))
+            self.copy_file(header, target, preserve_mode=False)
+
+    def get_outputs(self, include_bytecode=1):
+        outputs = build_py.get_outputs(self, include_bytecode=include_bytecode)
+        for header in headers:
+            target = os.path.join(self.build_lib, 'pfifo', header)
+            outputs.append(target)
+        return outputs
+
+
 setup(
     name=NAME,
     version=VERSION,
@@ -196,6 +214,7 @@ setup(
         'build_ext': BuildExt,
         'install_headers': InstallHeaders,
         'upload': UploadCommand,
+        'build_py': BuildPy,
     },
     zip_safe=False,
 )
